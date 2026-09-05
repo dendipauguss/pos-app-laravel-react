@@ -1,0 +1,17 @@
+.env
+.env.*
+.git
+.github
+node_modules
+vendor
+public/build
+storage/logs
+storage/framework/cache/*
+storage/framework/sessions/*
+storage/framework/views/*
+tests
+docker-compose*.yml
+docker-compose*.yaml
+compose.override.yaml
+Dockerfile*
+*.log

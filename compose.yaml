@@ -1,0 +1,59 @@
+services:
+    app:
+        build:
+            context: .
+            target: app
+        env_file:
+            - .env.docker
+        restart: unless-stopped
+        volumes:
+            - laravel_storage:/var/www/html/storage
+        depends_on:
+            mysql:
+                condition: service_healthy
+
+    nginx:
+        build:
+            context: .
+            target: web
+        restart: unless-stopped
+        ports:
+            - "8080:80"
+        volumes:
+            - laravel_storage:/var/www/html/storage
+        depends_on:
+            - app
+
+    worker:
+        build:
+            context: .
+            target: app
+        env_file:
+            - .env.docker
+        command: php artisan queue:work database --sleep=3 --tries=3 --timeout=90
+        restart: unless-stopped
+        volumes:
+            - laravel_storage:/var/www/html/storage
+        depends_on:
+            mysql:
+                condition: service_healthy
+
+    mysql:
+        image: mysql:8.4
+        restart: unless-stopped
+        environment:
+            MYSQL_DATABASE: pos
+            MYSQL_USER: pos
+            MYSQL_PASSWORD: pos_password
+            MYSQL_ROOT_PASSWORD: root_password
+        volumes:
+            - mysql_data:/var/lib/mysql
+        healthcheck:
+            test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
+            interval: 5s
+            timeout: 5s
+            retries: 20
+
+volumes:
+    laravel_storage:
+    mysql_data:
