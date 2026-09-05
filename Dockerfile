@@ -29,12 +29,13 @@ ENV APP_ENV=production \
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         libicu-dev \
+        libpq-dev \
         libzip-dev \
         unzip \
     && docker-php-ext-install \
         bcmath \
         intl \
-        pdo_mysql \
+        pdo_pgsql \
         zip \
     && rm -rf /var/lib/apt/lists/*
 

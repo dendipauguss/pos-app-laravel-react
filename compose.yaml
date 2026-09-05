@@ -9,7 +9,7 @@ services:
         volumes:
             - laravel_storage:/var/www/html/storage
         depends_on:
-            mysql:
+            pgsql:
                 condition: service_healthy
 
     nginx:
@@ -35,25 +35,24 @@ services:
         volumes:
             - laravel_storage:/var/www/html/storage
         depends_on:
-            mysql:
+            pgsql:
                 condition: service_healthy
 
-    mysql:
-        image: mysql:8.4
+    pgsql:
+        image: postgres:16-alpine
         restart: unless-stopped
         environment:
-            MYSQL_DATABASE: pos
-            MYSQL_USER: pos
-            MYSQL_PASSWORD: pos_password
-            MYSQL_ROOT_PASSWORD: root_password
+            POSTGRES_DB: pos
+            POSTGRES_USER: pos
+            POSTGRES_PASSWORD: pos_password
         volumes:
-            - mysql_data:/var/lib/mysql
+            - pgsql_data:/var/lib/postgresql/data
         healthcheck:
-            test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_password"]
+            test: ["CMD-SHELL", "pg_isready -U pos -d pos"]
             interval: 5s
             timeout: 5s
             retries: 20
 
 volumes:
     laravel_storage:
-    mysql_data:
+    pgsql_data:
