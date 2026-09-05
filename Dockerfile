@@ -9,7 +9,9 @@ RUN composer install \
     --no-progress \
     --prefer-dist \
     --optimize-autoloader \
-    --no-scripts
+    --no-scripts \
+    && test -s vendor/autoload.php \
+    && test -s vendor/laravel/framework/src/Illuminate/Foundation/Application.php
 
 FROM php:8.3-cli-bookworm AS frontend
 
