@@ -15,10 +15,7 @@ FROM php:8.3-cli-bookworm AS frontend
 
 WORKDIR /app
 
-COPY --from=node:22-bookworm /usr/local/bin/node /usr/local/bin/node
-COPY --from=node:22-bookworm /usr/local/bin/npm /usr/local/bin/npm
-COPY --from=node:22-bookworm /usr/local/bin/npx /usr/local/bin/npx
-COPY --from=node:22-bookworm /usr/local/lib/node_modules /usr/local/lib/node_modules
+COPY --from=node:22-bookworm /usr/local/ /usr/local/
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
