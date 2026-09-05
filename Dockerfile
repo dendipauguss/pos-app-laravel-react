@@ -1,13 +1,3 @@
-FROM node:22-bookworm AS frontend
-
-WORKDIR /app
-
-COPY package.json package-lock.json ./
-RUN npm ci
-
-COPY . .
-RUN npm run build
-
 FROM composer:2 AS vendor
 
 WORKDIR /app
@@ -20,6 +10,28 @@ RUN composer install \
     --prefer-dist \
     --optimize-autoloader \
     --no-scripts
+
+FROM node:22-bookworm AS frontend
+
+WORKDIR /app
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        php-cli \
+        php-curl \
+        php-intl \
+        php-mbstring \
+        php-pgsql \
+        php-xml \
+        php-zip \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY --from=vendor /app/vendor ./vendor
+COPY package.json package-lock.json ./
+RUN npm ci
+
+COPY . .
+RUN npm run build
 
 FROM php:8.3-fpm-bookworm AS app
 
